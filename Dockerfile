@@ -69,6 +69,7 @@ RUN mv /etc/paludis/repositories/binhost.conf.bak \
 
 
 COPY ./config/sites-enabled /etc/nginx/sites-enabled
+COPY ./config/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default.conf
 
 RUN mkdir -p /srv/binhost && chgrp paludisbuild /srv/binhost
