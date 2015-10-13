@@ -22,6 +22,7 @@ RUN rm /etc/paludis/hooks/ebuild_postinst_post/etckeeper.bash \
 # clone libressl
 RUN git clone --depth=1 https://github.com/gentoo/libressl.git \
 	/var/db/paludis/repositories/libressl
+RUN chgrp paludisbuild /dev/tty && cave fix-cache && eix-update
 
 # temporarily disable CC=clang
 RUN sed -i -e 's/CC=/#CC=/' -e 's/CXX=/#CXX=/' /etc/paludis/bashrc
