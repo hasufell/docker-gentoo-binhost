@@ -40,10 +40,8 @@ RUN chgrp paludisbuild /dev/tty && cave resolve -z -1 dev-libs/libressl \
 RUN chgrp paludisbuild /dev/tty && cave fix-linkage -x
 
 # update world with our USE flags
-RUN chgrp paludisbuild /dev/tty && cave resolve -c -f world \
-	--without sys-devel/gcc:4.8 --without sys-devel/gcc:4.9 -x
-RUN chgrp paludisbuild /dev/tty && cave resolve -c world \
-	--without sys-devel/gcc:4.8 --without sys-devel/gcc:4.9 -x
+RUN chgrp paludisbuild /dev/tty && cave resolve -c -f world -x
+RUN chgrp paludisbuild /dev/tty && cave resolve -c world -x
 
 # install tools set
 RUN chgrp paludisbuild /dev/tty && cave resolve -c -f tools -x
