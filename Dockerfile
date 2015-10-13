@@ -3,17 +3,65 @@ MAINTAINER Julian Ospald <hasufell@gentoo.org>
 
 ##### PACKAGE INSTALLATION #####
 
-# copy paludis config
-COPY ./config/paludis /etc/paludis
+# get paludis config
+RUN rm -rf /etc/paludis && \
+	git clone --depth=1 https://github.com/hasufell/gentoo-server-config.git \
+	/etc/paludis
+
+# temporarily disable binhost repo
+RUN mv /etc/paludis/repositories/binhost.conf \
+	/etc/paludis/repositories/binhost.conf.bak
+
+# rm etckeeper, we don't need it here
+RUN rm /etc/paludis/hooks/ebuild_postinst_post/etckeeper.bash \
+	/etc/paludis/hooks/ebuild_postrm_post/etckeeper.bash \
+	/etc/paludis/hooks/ebuild_preinst_post/etckeeper.bash \
+	/etc/paludis/hooks/ebuild_prerm_post/etckeeper.bash
+
+# clone libressl
+RUN git clone --depth=1 https://github.com/gentoo/libressl.git \
+	/var/db/paludis/repositories/libressl
+
+# temporarily disable CC=clang
+RUN sed -i -e 's/CC=/#CC=/' -e 's/CXX=/#CXX=/' /etc/paludis/bashrc
+# install clang
+RUN chgrp paludisbuild /dev/tty && cave resolve -z -1 clang -x
+# enable clang
+RUN sed -i -e 's/#CC=/CC=/' -e 's/#CXX=/CXX=/' /etc/paludis/bashrc
+
+# install libressl
+RUN chgrp paludisbuild /dev/tty && cave resolve -z -1 dev-libs/libressl \
+	dev-libs/openssl::libressl -D dev-libs/openssl -x -f
+RUN chgrp paludisbuild /dev/tty && cave resolve -z -1 dev-libs/libressl \
+	dev-libs/openssl::libressl -D dev-libs/openssl -x
+# fix linkage in case libressl broke it
+RUN chgrp paludisbuild /dev/tty && cave fix-linkage -x
 
 # update world with our USE flags
-RUN chgrp paludisbuild /dev/tty && cave resolve -c world -x
+RUN chgrp paludisbuild /dev/tty && cave resolve -c -f world \
+	--without sys-devel/gcc:4.8 --without sys-devel/gcc:4.9 -x
+RUN chgrp paludisbuild /dev/tty && cave resolve -c world \
+	--without sys-devel/gcc:4.8 --without sys-devel/gcc:4.9 -x
 
 # install tools set
+RUN chgrp paludisbuild /dev/tty && cave resolve -c -f tools -x
 RUN chgrp paludisbuild /dev/tty && cave resolve -c tools -x
+
+# install server set
+RUN chgrp paludisbuild /dev/tty && \
+	cave resolve -z -1 \!sys-fs/udev sys-fs/eudev virtual/udev -x -F sys-fs/eudev
+RUN chgrp paludisbuild /dev/tty && cave resolve -c -f server -x \
+	--permit-old-version 'dev-python/docker-py'
+RUN chgrp paludisbuild /dev/tty && cave resolve -c server -x
+
+RUN chgrp paludisbuild /dev/tty && cave fix-linkage -x
 
 # update etc files... hope this doesn't screw up
 RUN etc-update --automode -5
+
+# restore binhost repo
+RUN mv /etc/paludis/repositories/binhost.conf.bak \
+	/etc/paludis/repositories/binhost.conf
 
 ################################
 
@@ -21,5 +69,5 @@ RUN etc-update --automode -5
 COPY ./config/sites-enabled /etc/nginx/sites-enabled
 RUN rm /etc/nginx/sites-enabled/default.conf
 
-RUN mkdir -p /srv/binhost && chgroup paludisbuild /srv/binhost
+RUN mkdir -p /srv/binhost && chgrp paludisbuild /srv/binhost
 RUN mkdir -p /var/log/nginx/log
