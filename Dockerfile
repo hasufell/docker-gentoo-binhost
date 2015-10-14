@@ -7,7 +7,9 @@ MAINTAINER Julian Ospald <hasufell@gentoo.org>
 RUN mv /etc/paludis /etc/paludis-orig && \
 	git clone --depth=1 https://github.com/hasufell/gentoo-server-config.git \
 	/etc/paludis && cp /etc/paludis-orig/sets/nginx.conf /etc/paludis/sets/ \
-	&& cp /etc/paludis-orig/use.conf.d/nginx.conf /etc/paludis/use.conf.d/
+	&& cp /etc/paludis-orig/use.conf.d/nginx.conf /etc/paludis/use.conf.d/ \
+	&& rm /etc/paludis/package_mask.conf.d/binhost.conf \
+	/etc/paludis/package_unmask.conf.d/binhost.conf
 
 # temporarily disable binhost repo
 RUN mv /etc/paludis/repositories/binhost.conf \
