@@ -72,5 +72,9 @@ COPY ./config/sites-enabled /etc/nginx/sites-enabled
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default.conf
 
+COPY ./config/90cave.env.d /etc/env.d/90cave
+RUN mkdir -p /etc/paludis/tmp
+RUN env-update
+
 RUN mkdir -p /srv/binhost && chgrp paludisbuild /srv/binhost
 RUN mkdir -p /var/log/nginx/log
