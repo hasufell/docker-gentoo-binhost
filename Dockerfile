@@ -55,6 +55,7 @@ RUN chgrp paludisbuild /dev/tty && \
 RUN chgrp paludisbuild /dev/tty && cave resolve -c -f server -x \
 	--permit-old-version 'dev-python/docker-py'
 RUN chgrp paludisbuild /dev/tty && cave resolve -c server -x
+RUN chgrp paludisbuild /dev/tty && cave update-world --set server
 
 RUN chgrp paludisbuild /dev/tty && cave fix-linkage -x
 
