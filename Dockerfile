@@ -11,6 +11,8 @@ RUN mv /etc/paludis /etc/paludis-orig && \
 	&& rm /etc/paludis/package_mask.conf.d/binhost.conf \
 	/etc/paludis/package_unmask.conf.d/binhost.conf
 
+COPY ./config/paludis /etc/paludis
+
 # temporarily disable binhost repo
 RUN mv /etc/paludis/repositories/binhost.conf \
 	/etc/paludis/repositories/binhost.conf.bak
