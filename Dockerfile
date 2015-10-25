@@ -75,6 +75,12 @@ COPY ./config/sites-enabled /etc/nginx/sites-enabled
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default.conf
 
+RUN echo "update_digest() { for pkg in \$(cd /usr/gentoo-binhost/ && for f in */*; do echo \${f} ; done | grep -vE '(profiles|metadata)') ; do cave digest \${pkg} gentoo-binhost ; done ; }" >> /root/.bashrc
+RUN echo "rm_digest() { rm -v /usr/gentoo-binhost/*/*/Manifest ; }" >> /root/.bashrc
+RUN echo "rm_all_pbins() { rm -r /usr/gentoo-binhost/* && git -C /usr/gentoo-binhost checkout -- profiles ; }" >> /root/.bashrc
+RUN echo "rm_pbin() { local pbin=\$1 ; rm -rv /usr/gentoo-binhost/\"\${pbin}\" ; }" >> /root/.bashrc
+RUN echo "rm_pbin_distfiles() { rm -v /srv/binhost/gentoo-binhost--* ; }" >> /root/.bashrc
+
 COPY ./config/90cave.env.d /etc/env.d/90cave
 RUN mkdir -p /etc/paludis/tmp
 RUN env-update
