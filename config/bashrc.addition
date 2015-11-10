@@ -4,12 +4,8 @@ backupdir="/backup"
 
 # update the pbin digests in ${pbin_repo}
 update_pbin_digest() {
-	local pkg f
-	for pkg in $(
-			cd "${pbin_repo}" && for f in */*; do
-				echo ${f}
-			done | grep -vE '(profiles|metadata)'
-			) ; do
+	local pkg
+	for pkg in $(cave print-packages -r gentoo-binhost); do
 		cave digest ${pkg} gentoo-binhost
 	done
 }
