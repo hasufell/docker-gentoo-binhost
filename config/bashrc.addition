@@ -24,7 +24,8 @@ rm_all_pbins() {
 # rm a given pbin "category/packagename" from ${pbin_repo}
 rm_pbin() {
 	local pbin=$1
-	rm -v "${pbin_repo}"/"${pbin}"
+	rm -vr "${pbin_repo}"/"${pbin}"
+	rm -v "${distdir}"/gentoo-binhost--${pbin/\//--}-*
 }
 
 # remove binary tarballs from ${distdir}
